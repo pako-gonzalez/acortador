@@ -47,6 +47,7 @@ app.post('/login', (req, res) => {
         res.json({
             ok: true,
             usuario: usuarioDB,
+            expiresIn: 120,
             token
         });
 
