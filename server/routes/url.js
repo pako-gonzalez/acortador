@@ -8,23 +8,15 @@ const requestIp = require('request-ip');
 
 // Mostrar todas las urls
 app.get('/url', verificaToken, (req, res) => {
-    let desde = req.query.desde || 0;
-    desde = Number(desde);
-
-    let limite = req.query.limite || 5;
-    limite = Number(limite);
-
     Url.find({ usuario: req.usuario._id, })
-        .sort('description')
+        .sort('-active -clicks')
         .populate('usuario', 'nombre email')
-        .skip(desde)
-        .limit(limite)
         .exec((err, urls) => {
             if (err) {
                 return res.status(500).json({ ok: false, err });
             }
 
-            Url.countDocuments(null, (err, cont) => {
+            Url.countDocuments({ usuario: req.usuario._id }, (err, cont) => {
                 res.json({
                     ok: true,
                     urls,
@@ -96,6 +88,8 @@ app.put('/url/:id', verificaToken, (req, res) => {
     let updatedUrl = {
         description: body.description,
         target: body.target,
+        short: body.short,
+        active: body.active,
     };
 
     Url.findOneAndUpdate({ _id: id, usuario: req.usuario._id }, updatedUrl, { new: true, runValidators: true }, (err, urlDB) => {
@@ -147,6 +141,24 @@ app.delete('/url/:id', [verificaToken], (req, res) => {
     });
 });
 
+// Buscar un elemento por short
+// app.get('/url/short/:short', verificaToken, (req, res) => {
+//     let short = req.params.short;
+//     Url.find({ short: short }, (err, urlDB) => {
+//         if (err) {
+//             return res.status(500).json({ ok: false, err });
+//         }
+//         if (!urlDB) {
+//             return res.status(404).json({ ok: false, err: { message: 'URL no encontrada' } });
+//         }
+//         res.json({
+//             ok: true,
+//             url: urlDB,
+//         });
+//     });
+
+// });
+
 app.get('/*', (req, res) => {
 
     const clientIp = requestIp.getClientIp(req)
@@ -177,14 +189,20 @@ app.get('/*', (req, res) => {
 
         let audit = new Auditor({
             ip: clientIp,
-            url: urls[0]
+            url: urls[0],
+            usuario: urls[0].usuario,
         });
 
         audit.save();
+
+        urls[0].clicks += 1;
+        urls[0].save();
 
         res.redirect(urls[0].target);
     });
 
 });
+
+
 
 module.exports = app;

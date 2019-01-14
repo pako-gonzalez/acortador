@@ -8,6 +8,10 @@ let auditorSchema = new Schema({
     url: {
         type: Schema.Types.ObjectId,
         ref: 'Url'
+    },
+    usuario: {
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario'
     }
 }, {
     timestamps: true

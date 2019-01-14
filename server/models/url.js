@@ -24,7 +24,11 @@ let urlSchema = new Schema({
     usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario'
-    }
+    },
+    clicks: {
+        type: Number,
+        default: 0,
+    },
 }, {
     timestamps: true
 });
