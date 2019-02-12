@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "node server/server.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "mocha server/test"
     },
     "author": "",
     "license": "ISC",
@@ -22,5 +22,12 @@
         "request-ip": "^2.1.1",
         "shortid": "^2.2.13",
         "underscore": "^1.9.1"
+    },
+    "devDependencies": {
+        "chai": "^4.2.0",
+        "chai-http": "^4.2.1",
+        "mocha": "^5.2.0",
+        "superagent": "^4.1.0",
+        "supertest": "^3.3.0"
     }
 }
